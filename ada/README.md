@@ -5,7 +5,7 @@ Author: John Perry (john.perry@usm.edu)
 ## Compile
 
 ```
-gnatmake -O2 -gnatp complete_unscientific.adb
+gnatmake -O3 -gnatp complete_unscientific.adb
 strip -s ./complete_unscientific
 ```
 
