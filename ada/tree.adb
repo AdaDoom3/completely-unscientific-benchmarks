@@ -18,7 +18,7 @@ package body Trees is
   -- Merge --
   -----------
 
-  function merge(lower, greater: NodePtr) return NodePtr is
+  function Merge (lower, greater: NodePtr) return NodePtr is
     begin
 
       if lower = null then return greater; end if;
@@ -33,7 +33,7 @@ package body Trees is
       end if;  
     end;
 
-  function merge(lower, equal, greater: NodePtr) return NodePtr is
+  function Merge (lower, equal, greater: NodePtr) return NodePtr is
     begin
       return merge(merge(lower, equal), greater);
     end;
@@ -42,13 +42,14 @@ package body Trees is
   -- Split --
   -----------
 
-  procedure split(orig: NodePtr; lower, greaterOrEqual: in out NodePtr; val: Integer) is
+  procedure Split (orig: NodePtr; lower, greaterOrEqual: in out NodePtr; val: Integer) is
     begin
       if orig = null then
         lower := null;
         greaterOrEqual := null;
         return;
       end if;
+      
       if orig.x < val then
         lower := orig;
         split(lower.right, lower.right, greaterOrEqual, val);
@@ -58,32 +59,30 @@ package body Trees is
       end if;
     end;
 
-  procedure split(orig: NodePtr; lower, equal, greater: in out NodePtr; val: Integer) is
-      equalOrGreater: NodePtr;
+  procedure Split (orig: Node_Ptr; lower, equal, greater: in out NodePtr; val: Integer) is
+    Equal_Or_Greater : Node_Ptr;
     begin
-      split(orig, lower, equalOrGreater, val);
-      split(equalOrGreater, equal, greater, val + 1);
+      Split (orig, lower, equalOrGreater, val);
+      Split (equalOrGreater, equal, greater, val + 1);
     end;
 
   ---------------
   -- Has_Value --
   ---------------
 
-  function hasValue(t: in out Tree; x: Integer) return Boolean is
+  function Has_Value (t: in out Tree; x: Integer) return Boolean is
     lower, equal, greater: NodePtr;
-    result: Boolean;
     begin
       split(t.root, lower, equal, greater, x);
-      result := equal /= null;
       t.root := merge(lower, equal, greater);
-      return result;
+      return equal /= null;
     end;
 
   ------------
   -- Insert --
   ------------
 
-  procedure Insert(t: in out Tree; x: Integer) is
+  procedure Insert (t: in out Tree; x: Integer) is
     lower, equal, greater: NodePtr;
     begin
       split(t.root, lower, equal, greater, x);
