@@ -1,46 +1,34 @@
 with Ada.Numerics.Discrete_Random;
+with Ada.Unchecked_Deallocation;
 
-package Tree is
+package Trees is
 
-type Node is private;
+  type Node_Type is private;
+  type Node_Ptr is access Node_Type;
+  type Node_Type is record
+      Left, Right : Node_Ptr;
+      X, Y        : Integer;
+    end record;
 
-type NodePtr is access Node;
+  type Tree_Type is record
+      Root : Node_Ptr;
+    end record;
 
-type Tree is private;
-
-procedure initialize;
-
-function hasValue(t: in out Tree; x: Integer) return Boolean;
-
-procedure insert(t: in out Tree; x: Integer);
-
-procedure erase(t: in out Tree; x: Integer);
+  function Has_Value (T : in out Tree_Type; Item : Integer) return Boolean;
+  procedure Insert   (T : in out Tree_Type; Item : Integer);
+  procedure Erase    (T : in out Tree_Type; Item : Integer);
 
 private
 
-function merge(lower, greater: NodePtr) return NodePtr;
+  function Merge (Lower, Greater        : Node_Ptr) return Node_Ptr;
+  function Merge (Lower, Equal, Greater : Node_Ptr) return Node_Ptr;
 
-function merge(lower, equal, greater: NodePtr) return NodePtr;
+  procedure Split (Orig : Node_Ptr; Lower, Greater_Or_Equal : in out Node_Ptr; Val : Integer);
+  procedure Split (Orig : Node_Ptr; Lower, Equal, Greater   : in out Node_Ptr; Val : Integer);
 
-procedure split(orig: NodePtr; lower, greaterOrEqual: in out NodePtr; val: Integer);
+  package Integer_Random is new Ada.Numerics.Discrete_Random (Integer);
+  use Integer_Random;
+  procedure Free is new Ada.Unchecked_Deallocation (Node, Node_Ptr);
 
-procedure split(orig: NodePtr; lower, equal, greater: in out NodePtr; val: Integer);
-
-procedure make_node(n: out NodePtr; x: Integer);
-
-type Tree is record
-  root: NodePtr := null;
-end record;
-
-package Integer_Random is new Ada.Numerics.Discrete_Random(Integer);
-use Integer_Random;
-
-g: Generator;
-
-type Node is record
-  left, right: NodePtr;
-  x: Integer := 0;
-  y: Integer := Random(g);
-end record;
-
-end Tree;
+  G : Integer_Random.Generator;
+end;
